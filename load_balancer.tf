@@ -23,7 +23,7 @@ resource "aws_lb_target_group" "web_servers" {
 
   health_check {
     enabled  = true
-    path     = "/"
+    path     = "/health"
     port     = "traffic-port"
     protocol = "HTTP"
     matcher  = "200"
@@ -51,5 +51,27 @@ resource "aws_lb_listener" "http" {
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.web_servers.arn
+  }
+}
+# Health endpoint on the load balancer
+
+resource "aws_lb_listener_rule" "health" {
+  listener_arn = aws_lb_listener.http.arn
+  priority     = 1
+
+  action {
+    type = "fixed-response"
+
+    fixed_response {
+      content_type = "application/json"
+      message_body = "{\"status\":\"healthy\",\"component\":\"load-balancer\"}"
+      status_code  = "200"
+    }
+  }
+
+  condition {
+    path_pattern {
+      values = ["/health"]
+    }
   }
 }
