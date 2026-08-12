@@ -1,0 +1,9 @@
+# Terraform state (contains sensitive data)
+terraform.tfstate
+terraform.tfstate.backup
+
+# Terraform working directory
+.terraform/
+
+# Codex
+.codex
