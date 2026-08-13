@@ -22,17 +22,18 @@ resource "aws_instance" "web_server" {
     apt-get update -y
     apt-get install -y nginx
 
-    echo "<h1>Hello from web-server-${count.index + 1}</h1>" > /var/www/html/index.html
+    echo "<h1>Hello from web-server-${count.index + 1}</h1><p>Version: ${var.web_server_version}</p>" > /var/www/html/index.html
 
-    # Health endpoint - single file, no directory
-    echo '{"status":"healthy","component":"web-server-${count.index + 1}"}' > /var/www/html/health
+    # Health endpoint
+    echo '{"status":"healthy","component":"web-server-${count.index + 1}","version":"${var.web_server_version}"}' > /var/www/html/health
 
     systemctl start nginx
     systemctl enable nginx
   EOF
 
   tags = {
-    Name = "web-server-${count.index + 1}"
+    Name    = "web-server-${count.index + 1}"
+    Version = var.web_server_version
   }
 
   lifecycle {

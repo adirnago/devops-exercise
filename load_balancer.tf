@@ -8,6 +8,7 @@ resource "aws_lb" "main" {
 
   tags = {
     Name = "devops-exercise-alb"
+    Version = var.load_balancer_version
   }
 }
 
@@ -64,7 +65,7 @@ resource "aws_lb_listener_rule" "health" {
 
     fixed_response {
       content_type = "application/json"
-      message_body = "{\"status\":\"healthy\",\"component\":\"load-balancer\"}"
+      message_body = "{\"status\":\"healthy\",\"component\":\"load-balancer\",\"version\":\"${var.load_balancer_version}\"}"
       status_code  = "200"
     }
   }
