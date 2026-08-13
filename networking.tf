@@ -3,6 +3,14 @@ data "aws_vpc" "default" {
   default = true
 }
 
+# Get all subnets in the default VPC
+data "aws_subnets" "default" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+}
+
 # Security group for web servers
 resource "aws_security_group" "web_server" {
   name        = "web-server-sg"
