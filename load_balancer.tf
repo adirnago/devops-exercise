@@ -1,25 +1,24 @@
 # Load Balancer
 resource "aws_lb" "main" {
-  name               = "devops-exercise-alb"
+  name               = "${var.cluster_name}-alb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.web_server.id]
   subnets            = data.aws_subnets.default.ids
 
   tags = {
-    Name = "devops-exercise-alb"
+    Name    = "${var.cluster_name}-alb"
     Version = var.load_balancer_version
   }
 }
 
 # Target Group (the web servers)
 resource "aws_lb_target_group" "web_servers" {
-  name     = "devops-exercise-tg"
+  name     = "${var.cluster_name}-tg"
   port     = 80
   protocol = "HTTP"
   vpc_id   = data.aws_vpc.default.id
 
-  # Round-robin is the default algorithm
   load_balancing_algorithm_type = "round_robin"
 
   health_check {
@@ -31,7 +30,7 @@ resource "aws_lb_target_group" "web_servers" {
   }
 
   tags = {
-    Name = "devops-exercise-tg"
+    Name = "${var.cluster_name}-tg"
   }
 }
 
@@ -54,8 +53,8 @@ resource "aws_lb_listener" "http" {
     target_group_arn = aws_lb_target_group.web_servers.arn
   }
 }
-# Health endpoint on the load balancer
 
+# Health endpoint on the load balancer
 resource "aws_lb_listener_rule" "health" {
   listener_arn = aws_lb_listener.http.arn
   priority     = 1
@@ -65,7 +64,7 @@ resource "aws_lb_listener_rule" "health" {
 
     fixed_response {
       content_type = "application/json"
-      message_body = "{\"status\":\"healthy\",\"component\":\"load-balancer\",\"version\":\"${var.load_balancer_version}\"}"
+      message_body = "{\"status\":\"healthy\",\"component\":\"${var.cluster_name}-load-balancer\",\"version\":\"${var.load_balancer_version}\"}"
       status_code  = "200"
     }
   }

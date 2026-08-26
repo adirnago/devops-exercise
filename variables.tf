@@ -15,3 +15,9 @@ variable "load_balancer_version" {
   type        = string
   default     = "1.0.0"
 }
+
+variable "cluster_name" {
+  description = "Name of the cluster"
+  type        = string
+  default     = "cluster-a"
+}
